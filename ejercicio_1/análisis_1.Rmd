@@ -1,0 +1,197 @@
+---
+title: "Taller 1"
+author: "GBC & JLR"
+date: "10/11/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Bienvenido a la primera clase de métodos. Si todo ha ido correctamente, tienes un proyecto de R recién descargado de Github. En ese archivo se pregunta respecto a la actitud hacia la estadística, el conocimiento de R y que se valore la edad que se atribuyes a unas caras. 
+Primero de todo vamos a cargar el archivo de datos en R. 
+  
+Los objetivos de este taller son
+
+- Familiarizarnos con el uso de R 
+- Aprender a manejar una primera base de datos pequeña y sencilla
+- Poder extraer conclusiones de nuestro primer set de datos
+
+
+## Abrir el fichero
+
+Primero de todo querremos abrir nuestro fichero
+
+```{r}
+# Leer archivo csv, es decir, comma separated value
+# es un tipo de archivo de texto plano que es fácil compartir 
+# ya que no depende de estándares privativos 
+
+df <- read.csv("./data/datos_2021.csv") 
+
+head(df)
+summary(df)
+  
+```
+Como podemos observar esta base de datos está incomprensible. Las palabras con acentos no se _parsean_ correctamente. Esto es debido a que R no conoce la codificación estándard  y hay que especificarsela dándole el argumento a la función read.csv() de encoding con valor "UTF-8"
+
+```{r}
+df <- read.csv()
+
+head(df)
+summary(df)
+  
+  
+```
+
+Antes de continuar, tenemos que asegurarnos que nuestra base de datos está usable. Según un estudio realizado entre mis 6 mejores amigos que se dedican al _datascience_, 5 de ellos afirman que el  90% del tiempo dedicado a trabajar con datos corresponde a laboras de limpieza, _parseo_ y obtención de algo que pueda analizarse. El amigo que sobra, indica que el 90% del tiempo dedicado a trabjar corresponde a surfear la ansiedad relativa a que te manden bases de datos con errores continuos. Normalmente los libros de análisis de datos y métodos asumen que tu base de datos está limpia y usable como los _datasets_ que vienen por defecto con los programas como _iris_ o _mtcars_. 
+
+```{r}
+
+# Primero de todo necesitamos paquetes. Este código instalará los paquetes que usaremos. 
+if (!require('pacman')) install.packages('pacman'); library('pacman') 
+pacman::p_load(janitor, skimr) 
+
+# los :: indican a R que tiene que usar la función del paquete 
+# que se le indica, en este caso es la función p_load del paquete pacman
+# por motivos didácticos en ocasiones lo usaremos para indicar de qué paquete
+# viene cada función
+
+df <- clean_names(df) # esta funcion estandariza los nombres de nuestras columnas
+
+# Pero estas columnas siguen sin ser usables
+# existen diversas estrategias para cambiar los nombres de columnas
+# por ejemplo el uso de mutate() del paquete dplyr
+# o el uso de manipulacion de cadenas de texto con sub_str()
+# Nosotros queremos un nombre descriptivo fácil de manejar. 
+# Nuestro dataset incluye códigos en el inicio de la columna que podemos aprovechar 
+# Las columnas más interesantes serán las que comienzan por "e" que nos indican qué 
+# estimaciones de edad han hecho los participantes sobre unas fotos que se presentan 
+# más abajo. Además podemos usar las valoraciones de la seguridad con la que han 
+# hecho esas estimaciones con la variable "v1"
+
+
+colnames(df)
+
+
+# Vamos a quedarnos con de cada nombre, las 4 primeras letras
+colnames(df) <- substr(colnames(df), 1, 4)
+
+```
+
+## Descripción
+
+Ahora tenemos algo que podemos manejar y por ejemplo, podemos aplicar funciones sencillas para conoceros. Por ejemplo, probemos algunas funciones para conocer la media de edad, la frecuencia del género y la cantidad de personas que tomaron clases de estadística anteriormente.
+
+
+```{r}
+mean(df$a2_e)
+hist(df$a2_e)
+
+table(df$a1_g)
+table(df$a3_)
+```
+
+Esto ha sido fácil, pero iréis viendo que a medida que se complejizan la preguntas, tambien lo hacen la forma de obtener respuestas. ¿Por ejemplo, cómo convertir las variables categóricas relacionadas con vuestra opinión sobre la estadística en numéricas? Utiliza la variable x_s1 y conviertela en una variable numerica ordenando los valores del factor y después convirtiendolos en numerico
+
+```{r}
+
+levels <- c('Totalmente en desacuerdo', 'En desacuerdo', 'Neutral', 'De acuerdo', 'totalmente de acuerdo')
+df$x1 = factor(df$x_s1, levels)
+df$x1_1 <- as.integer(df$x1)
+df$x1_1
+
+```
+
+O ¿Cómo podemos saber la media de las distintas evaluaciones de las caras? Hacerlo con el anterior método es difícil. Vamos a probar con algun funcion como `janitor::skim()`
+
+```{r}
+
+skim(df)
+
+
+```
+
+## Edades
+
+Ahora queremo observar si en general somos buenos adivinando edades o no. Las edades reales de las personas que han  visto son las siguientes
+
+e1 20 años https://faces.mpdl.mpg.de/imeji/collection/IXTdg721TwZwyZ8e/item/tBGQ7n8JXWq023eP?q=&fq=&filter=&pos=56#pageTitle
+![edad 20](./faces/1.png)
+e2 25 años https://faces.mpdl.mpg.de/imeji/collection/IXTdg721TwZwyZ8e/item/WxEEKpSVT8y9JJYb?q=&fq=&filter=&pos=20#pageTitle
+![edad 25](./faces/2.png)
+e3 77 años https://faces.mpdl.mpg.de/imeji/collection/IXTdg721TwZwyZ8e/item/Yg6qw__84II7oVxH?q=&fq=&filter=&pos=33#pageTitle
+![edad 77](./faces/3.png)
+
+
+e4 45 años https://faces.mpdl.mpg.de/imeji/collection/IXTdg721TwZwyZ8e/item/ELSdmHOBvzEpnGp?q=&fq=&filter=&pos=44#pageTitle
+![edad 45](./faces/4.png)
+e5 70 años https://faces.mpdl.mpg.de/imeji/collection/IXTdg721TwZwyZ8e/item/S_QNCikK7dt28Kq7?q=&fq=&filter=&pos=8#pageTitle
+![edad 70](./faces/5.png)
+
+Con esta información podemos calcular la diferencia entre la estimación y la realidad. Para ello usaremos una fórmula para restar la edad real a la edad que estimamos. Modifica este código para averiguar el error que se comete con cada uno de las imágenes. Habrá que tener en cuenta que algunas de nuestras variables pueden tener valores no numéricos. Para ello tendrás que convertir en "numeric" las variables que no lo sean y crear nuevas variables donde restes la edad real a la edad estimada (df$e1_q, por ejemplo).
+
+```{r}
+
+df$e4_q <- 
+df$e4_q
+
+df$e1_error 
+df$e2_error
+df$e3_error
+df$e4_error
+df$e5_error
+
+
+summary(df$e1_q)
+summary(df$e1_error)
+hist(df$e1_error)
+
+```
+
+Con estas nuevas variables podemos llevar a cabo una regresión para poder estimar el error cometido (df$e1_error) según las variables v1_e, a1_g y a2_e
+
+
+```{r}
+
+
+
+m1 <- lm()
+summary(m1) 
+
+
+```
+
+Si no has encontrado una relación significativa puedes explorar con un pqueño gráfico la relación entre la variable v1_e y e1_error para ver hasta que punto podemos relacionar la seguridad de las evaluaciones con la precisión de las mismas 
+
+```{r}
+plot()
+cor()
+```
+
+Con este error calculado podemos llevar a cabo otros cálculos interesantes como por ejemplo el error cuadrático medio. Recuerda que en estadística nos interesa el error porque es cuánto falla nuestro modelo haciendo predicciones. El error cuadrático medio (RMSE en inglés) es la raíz cuadrada del valor absoluto del error al cuadrado. 
+
+La fórmula es la siguiente: `rmse = sqrt(mean((valor_real -  valor_predicho)^2))`. La lógica de la misma es queremos que la gente que se equivoque más, tenga más peso (por eso el cuadrado) y obtener una media de cuanto se desvían (de ahi la media) en una escala más entendible (por eso la raíz cuadrada que 'cancela' el cuadrado anterior). Calcula el RMSE de la variable df$e1_error
+
+```{r}
+
+
+
+```
+
+Ahora que conocemos esta lógica podemos crear una función que nos entregue el RMSE de cualquier vector que se le suministre. Crea esta función y aplicala sobre el resto de varialbe (df$e2_error, df$e3_error, etc)
+
+```{r}
+
+rmse <- function(x)
+{
+  
+
+}
+
+rmse(df$e1_error)
+
+```
