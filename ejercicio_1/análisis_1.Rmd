@@ -39,7 +39,7 @@ summary(df)
 Como podemos observar esta base de datos está incomprensible. Las palabras con acentos no se _parsean_ correctamente. Esto es debido a que R no conoce la codificación estándard  y hay que especificarsela dándole el argumento a la función read.csv() de encoding con valor "UTF-8"
 
 ```{r}
-df <- read.csv()
+df <- read.csv("./data/datos_2021.csv", encoding = "UTF-8") 
 
 head(df)
 summary(df)
