@@ -11,10 +11,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Bienvenido a la primera clase de métodos. Si todo ha ido correctamente, tienes un proyecto de R recién descargado de Github. En ese archivo se pregunta respecto a la actitud hacia la estadística, el conocimiento de R y que se valore la edad que se atribuyes a unas caras. 
+Bienvenido a la primera clase de métodos. Si todo ha ido correctamente, tienes un proyecto de R recién descargado de Github. En ese archivo se pregunta respecto a la actitud hacia la estadística, el conocimiento de R y que se valore la edad de unas caras. 
 Primero de todo vamos a cargar el archivo de datos en R. 
   
-Los objetivos de este taller son
+Los objetivos de este taller son:
 
 - Familiarizarnos con el uso de R 
 - Aprender a manejar una primera base de datos pequeña y sencilla
