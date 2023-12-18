@@ -1,0 +1,96 @@
+---
+title: "ggplot2"
+author: "JLR"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, haven, skimr, sjlabelled)
+
+
+# preparamos el datset
+df <- haven::read_sav("/Users/javilor/Library/CloudStorage/GoogleDrive-jlorenzo@polsoc.uc3m.es/My Drive/COLPOLSOC-Intro_R_20230217/Data/ESS1e06_6.sav")
+
+
+df <- dplyr::select(df, country = cntry, 
+                        gender = gndr, age=agea, satisfaction = stfdem, health, happy)
+
+df <- df %>% mutate(country = as_label(country), 
+                                          gender = as_label(gender),
+                                          satisfaction = as.numeric(satisfaction),
+                                          health = as.numeric(health),
+                                          happy = as.numeric(happy))
+```
+
+Elemento vacío, unícamente se mapean las estéticas x e y
+sin embargo, no se proporcionan geometrías
+
+```{r}
+
+
+df %>%  ggplot(aes(x = age, y = happy)) 
+```
+
+ponemos nuestra primera geometría
+
+```{r}
+df %>%  ggplot(aes(x = age, y = happy)) +
+  geom_point()
+```
+
+ cambiamos a una geometría que sea más adecuada para nuestros datos
+```{r}
+df %>%  ggplot(aes(x = age, y = happy)) +
+  geom_smooth()
+```
+
+cambiamos los argumentos de la geometría
+```{r}
+df %>%  ggplot(aes(x = age, y = happy)) +
+  geom_smooth(method = "lm")
+```
+ 
+ cambiamos a las estéticas añadiendo el mapeo del color
+```{r}
+df %>%  ggplot(aes(x = age, y = happy, color = gender)) +
+  geom_smooth()
+```
+ usamos dplyr para que nuestro dataset sea más adecuado 
+
+```{r}
+df %>% drop_na() %>% filter(age < 85) %>%  ggplot(aes(x = age, y = happy, color = gender)) +
+  geom_smooth()
+```
+
+añadimos un nuevo elemento: las facetas 
+
+```{r}
+df %>% drop_na() %>% filter(age < 85) %>%  ggplot(aes(x = age, y = happy, color = gender)) +
+  geom_smooth() + facet_wrap(~country) 
+```
+
+y los "themes"
+
+```{r}
+df %>% drop_na() %>% filter(age < 85) %>%  ggplot(aes(x = age, y = happy, color = gender)) +
+  geom_smooth() + facet_wrap(~country) + theme_light()
+``` 
+
+
+añadimos nuevos elementos
+```{r}
+df %>% drop_na() %>% filter(age < 90) %>%  ggplot(aes(x = age, y = happy, color = gender)) +
+  geom_smooth() + 
+  facet_wrap(~country) + theme_light() +
+  theme(legend.position = "top"
+        
+  ) +
+  labs(title = "Happiness across age") +
+  scale_x_continuous(name = "Age") + 
+  scale_y_continuous(name = "Happiness")
+```
+
+  
